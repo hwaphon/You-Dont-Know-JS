@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+    </head>
+    <body>
+    	<script type="text/javascript">
+
+    		function noStrict() {
+    			// LHS
+    			console.log(a = 2);
+
+    			// RHS
+    			console.log(b);
+    		}
+
+    		function withStrict() {
+    			"use strict"
+
+    			// LHS
+    			console.log(a = 2);
+
+    			// RHS
+
+    			console.log(b);
+    		}
+
+    		// noStrict();
+    		withStrict();
+    	</script>
+    </body>
+</html>
