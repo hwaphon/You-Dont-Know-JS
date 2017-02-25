@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+    </head>
+    <body>
+    	<script type="text/javascript">
+    		function foo(obj) {
+    			with(obj) {
+    				a = 2;
+    			}
+    		}
+
+    		var obj1 = {
+    			a: 3
+    		};
+
+    		var obj2 = {
+    			b: 4
+    		};
+
+    		foo(obj1);
+    		console.log(obj1.a);
+    		// console.log(a);
+
+    		foo(obj2);
+    		console.log(obj2.a);
+    		console.log(a);
+    	</script>
+    </body>
+</html>
