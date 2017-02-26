@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+    </head>
+    <body>
+    	<script type="text/javascript">
+    		var myObject = {
+    			a: 2
+    		};
+
+    		var anotherObject = Object.create(myObject);
+
+    		for(var k in anotherObject) {
+    			console.log("found: " + k);
+    		}
+
+
+    	</script>
+
+    </body>
+</html>
