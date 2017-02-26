@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+    </head>
+    <body>
+    	<script type="text/javascript">
+    		
+    		var myArray = [];
+    		var anotherObject = {
+    			c: true
+    		};
+
+    		var myObject = {
+    			a: 2,
+    			b: myArray,
+    			c: anotherObject
+    		};
+
+    		var copyObject = Object.assign({}, myObject);
+
+    		console.log(copyObject.a);
+    		console.log(copyObject.b === myObject.b);
+    		console.log(copyObject.c === myObject.c);
+
+    		var newObject = JSON.parse(JSON.stringify(myObject));
+    		console.log(newObject.a);
+    		console.log(newObject.b === myObject.b);
+    		console.log(newObject.c === myObject.c);
+    	</script>
+    </body>
+</html>
