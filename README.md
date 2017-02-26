@@ -79,4 +79,15 @@ chapter-08:
 
 即便属性是 `configurable:false` , 我们还是可以把 `writable` 的状态由 `true` 改为 `false` ,但是无法由 `false` 改为 `true` 。
 
+如 果 你 想 禁 止 一 个 对 象 添 加 新 属 性 并 且 保 留 已 有 属 性, 可 以 使 用 `Object.preventExtensions(..)` 。
+
+`Object.seal(..)` 会创建一个“密封”的对象,这个方法实际上会在一个现有对象上调用 `Object.preventExtensions(..)` 并把所有现有属性标记为 `configurable:false` 。所以,密封之后不仅不能添加新属性,也不能重新配置或者删除任何现有属性(虽然可以修改属性的值)。
+
+`Object.freeze(..)` 会 创 建 一 个 冻 结 对 象, 这 个 方 法 实 际 上 会 在 一 个 现 有 对 象 上 调 用 `Object.seal(..)` 并把所有“数据访问”属性标记为 `writable:false` ,这样就无法修改它们的值。
+
+
+
+
+
+
 
