@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+    </head>
+    <body>
+    	<script type="text/javascript">
+    		function print() {
+    			console.log(this.a);
+    		}
+
+    		var obj1 = {
+    			a: 2,
+    			print: print
+    		};
+
+    		var obj2 = {
+    			a: 4,
+    			print: print
+    		};
+
+    		obj1.print();
+    		obj2.print();
+
+    		obj1.print.call(obj2);
+    		obj2.print.call(obj1);
+    	</script>
+    </body>
+</html>
