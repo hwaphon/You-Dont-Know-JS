@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+    </head>
+    <body>
+    	<script type="text/javascript">
+
+    		// default bind rule
+    		function bindDefault() {
+    			console.log(this.a);
+    		}
+    		var a = 2;
+    		bindDefault();
+
+    		// implict bind rule
+    		function bindImplict() {
+    			console.log(this.a);
+    		}
+
+    		var obj = {
+    			a: 7,
+    			bindImplict: bindImplict
+    		};
+
+    		obj.bindImplict();
+
+    		// explict bind rule
+
+    		function bindExplict() {
+    			console.log(this.a);
+    		}
+
+    		bindExplict.call(obj);
+
+    		// use new
+
+    		function newBind(a) {
+    			this.a = a;
+    		}
+
+    		var bar = new newBind(2);
+    		console.log(bar.a);
+
+
+    	</script>
+    </body>
+</html>
