@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+    </head>
+    <body>
+    	<script type="text/javascript">
+
+    		// const variable
+    		var myObject = {};
+
+    		Object.defineProperty(myObject, "FAVORITE_NUMBER", {
+    			value: 666,
+    			writable: false,
+    			configurable: false
+    		});
+
+    		console.log(myObject.FAVORITE_NUMBER);
+    		myObject.FAVORITE_NUMBER = 10;
+    		console.log(myObject.FAVORITE_NUMBER);
+
+    		// preventExtensions
+
+    		var anotherObject = {
+    			a: 6
+    		};
+
+    		Object.preventExtensions(anotherObject);
+    		console.log(anotherObject.a);
+    		anotherObject.b = 10;
+    		console.log(anotherObject.b);
+
+    		console.log(Object.keys(anotherObject));
+    		console.log(Object.getOwnPropertyNames(anotherObject));
+
+    	</script>
+    </body>
+</html>
