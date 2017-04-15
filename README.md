@@ -1,4 +1,4 @@
-# You-Dont-Know-JS
+# You-Dont-Know-JS(上)
 
 chapter-1: 
 
@@ -85,6 +85,105 @@ chapter-08:
 
 `Object.freeze(..)` 会 创 建 一 个 冻 结 对 象, 这 个 方 法 实 际 上 会 在 一 个 现 有 对 象 上 调 用 `Object.seal(..)` 并把所有“数据访问”属性标记为 `writable:false` ,这样就无法修改它们的值。
 
+# You Don't Kown JS(中)
+
+chapter 2:
+
+二进制浮点数最大的问题（不仅 `JavaScript`， 所有遵循 `IEEE754` 规范的语言都是如此）就是会出现下面这个问题。
+
+    0.1 + 0.2  === 0.3    // false 
+
+简单的说，二进制浮点数中的 0.1 和 0.2 并不是非常的准确，他们相加的结果也不是正好等于 0.3 ，而是一个比较接近的数字 0.30000000000000004。那么怎么才能解决上述问题呢？最常见的方法是设置一个误差范围值，通常成为机器精度，对 `JavaScript` 来说，这个值通常是 `2^-52`，不过在 `ES6` 中，这个值定义在 `Number.EPSILON` 中，而且这个值为 `2.220446049250313e-16`。所以我们可以写一个判断在误差范围内两数是否相等的函数。
+
+    function numbersCloseEnoughToEqual(n1, n2) {
+    	if(!Number.EPSILON) {
+    		Number.EPSILON = Math.pow(2, -52);
+    	}
+    	return Math.abs(n1 - n2) < Number.EPSILON;
+    }
+    
+ `JS` 能够表示的数字范围在 [5e-324 , 1.7976931348623157e+308] 之间，这两个值保存在 `Number.MIN_VALUE`和 `Number.MAX_VALUE`中，不过值得注意的是，`JS` 能够确保安全呈现的最大整数为 `2^53 -1`，最小整数为 `-2^53-1`，这两个值从 `ES6` 开始分别保存在 `Number.MAX_SAFE_INTEGER` 和 `Number.MIN_SAFE_INTEGER`, 不过这里所谓的安全到底是指什么呢？意思就是说，在安全范围中的整数在运算的时候可以保证其精确度，而超过了安全范围，两个值仍然可以运算，但是不再保证其精确度。
+ 
+     console.log(9007199254740991 + 10);     // 结果为 9007199254741000
+     
+ 
+ `ES6` 中定义了两个方便使用的函数，一个是 `Number.isInteger()` 用于检测一个值是否为一个整数，还有一个是 `Number.isSafeInteger()`用于判断一个整数是否为安全整数。由于在 `ES6` 之前并不支持这两个函数，所以我们可以写两个等价的函数。
+ 
+     if(!Number.isInteger) {
+    	Number.isInteger = function(num) {
+    		return typeof num === "number" && num % 1 === 0;
+    	};
+    }
+
+    if(!Number.isSafeInteger) {
+    	Number.isSafeInteger = function(num) {
+    		if(!Number.MAX_SAFE_INTEGER) {
+    			Number.MAX_SAFE_INTEGER = Math.pow(2, 53) - 1;
+    		}
+    		return Number.isInteger(num) && Math.abs(num) <= Number.MAX_SAFE_INTEGER;
+    	}
+    }
+    
+`void` 运算符通常用来返回 `undefined`，比如我们不想让表达式返回任何结果，可以像下面这样应用。
+
+    function doSomeThing() {
+    	if(!ready) {
+    		return void setTimeOut(doSomeThing, 100);
+    	}	
+
+    	var result = 10;
+    	return result;
+    }
+    
+这么做的优点在哪里呢？那么我们就得考虑一下如果不使用 `void` 而完成同样的功能应该怎么做！我们会将上述一条语句写成如下格式，因为 `setTimeOut`会返回一个数值，所以利用 `void` 的主要功能就是简化语句。
+
+    	if(!ready) {
+    		setTimeOut(doSomeThing, 100);
+    		return;
+    	}	
+    	
+在 `ES6` 之前，我们可能会使用 `window.isNaN()` 去检测一个变量是否为 `NaN`, 不过这个方法的检查方式死板。
+
+    console.log(isNaN("a"));    // true
+    
+所以在 `ES6` 中，我们可以使用 `Number.isNaN()` 来检测一个值是否为 `NaN`，就不会出现上述问题。如果不支持 `ES6`, 也可以利用 `NaN` 自己不等于自己的特性，写出替代方法。
+
+    if (!Number.isNaN) {
+    	Number.isNaN = function(num) {
+    		return num !== num;
+    	}
+    }
+
+对于零值，在 `JS` 中有个奇怪的现象，那就是如果你将 `-0` 转换为字符串，那么它就会自动的将负号省略，但是反过来却不成立，也就是说如果你将一个带负号的字符串形式的 `-0` 转换成整数，它就不会省略负号。而且表达式 `0 === -0` 也是成立的，所以对于需要区分 `0` 与 `-0` 的场合，我们可以写一个辅助函数，如下所示。
+
+    function isNegZero(num) {
+    	num = Number( num );
+    	return ( num === 0 ) && ( 1 / num === -Infinity );
+    }
+    
+为了能够方便的比较两个数，比如这两个数都是 `NaN`, 由于其本身的特性，所以 `NaN === NaN` 是不成立的，所以在 `ES6` 中新增了一个 `Object.is()` 用于判断两个值是否绝对相等。
+
+    console.log(Object.is(NaN, NaN));    // true
+    console.log(Object.is(0, -0));    // false
+    
+对于 `ES6` 之前，我们可以写一个替代函数。
+
+    if (!Object.is) {
+    	Object.is = function(v1, v2) {
+    		// 判断是否是 -0
+    		if (v1 === 0 && v2 === 0) {
+    			return 1 / v1 === 1 / v2;
+    		}
+
+    		// 判断是否是 NaN
+    		if (v1 !== v1) {
+    			return v2 !== v2;
+    		}
+
+    		// 其他情况
+    		return v1 === v2;
+    	}
+    }
 
 
 
