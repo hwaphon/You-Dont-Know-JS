@@ -184,8 +184,53 @@ chapter 2:
     		return v1 === v2;
     	}
     }
+    
+----
 
+chapter 3:
 
+从功能和性能而言，都没有理由直接使用 `String(), Array(), Object(), Function(), RegExp()`原生构造函数去创建对象。不过 `Date()`和 `Error()` 不同，因为它们没有对应的常量形式去替代。
+
+为了获取当前的 `Unix` 时间戳（从 1970 年 1 月 1 日计算，以秒为单位），可以使用 `new Date().getTime()`, 不过在 `ES5` 中引入了一个更加简单的方法 `Date.now()`,对于不支持 `ES5` 的浏览器来说，我们可以写出如下替代函数。
+
+    if (!Date.now) {
+    	Date.now = function() {
+    		return (new Date()).getTime();
+    	}
+    }
+    
+
+`sybmol` 并非对象，而是一种简单标量类型。
+
+---
+
+chapter 4:
+
+1. `ToString`
+ 基本类型值的字符串化规则为： `null` 转换为 `"null"`，`undefined` 转换为 `"undefined"`，`true` 转换为 `"true"`，数字的字符串化则遵循通用规则。 对于普通对象来说，除非自行定义，否则 `toString` 返回内部属性 `[[Class]]` 的值，如 `[object Object]`。
+ 
+2. `ToJSON`
+所有安全的 `JSON` 值都可以使用 `JSON.stringify()` 字符串化。安全的 `JSON` 值是指能够呈现为有效 `JSON` 格式的值。所谓不安全的 `JSON` 值，就是 `undefined, function, symbol` 和包含循环引用的对象。`JSON.stringify()` 遇到这些值就会自动忽略，如果这些值在数组中则会返回 `null`以保证单元位置不变。
+
+3. `ToNumber`
+转换规则如下： `true` 转换为 1，`false`转换为 0， `undefined` 转换为 `NaN`，`null` 转换为 0。对于对象，首先检测是否有 `valueOf()`方法，如果有并且返回基本类型的值，就使用该值做强制类型转换。如果没有就使用 `toString()`的返回值来进行强制类型转换。如果 `valueOf()` 和 `toString()`都不返回基本类型额值，会产生 `TypeError`错误。如果已经存在了 `valueOf`，那么在转换过程中将不再考虑 `toString`。
+
+4. `ToBoolean`
+以下为假值列表： `undefined, null, false, +0, -0, NaN, ""`，还有一种称之为假值对象的概念，比如 `new Boolean(false)` 这个对象，其实它的值为 `true`。
+
+字符串和数字的转换，可以简单的通过 `Number()` 和 `String()` 来转换，也可以采用 `+`运算符将字符串转换为数字，比如 `+"48"` 返回的就是 `48`。
+
+`JS` 中有一处奇特的语法，那就是构造函数没有参数时，可以不用带 `()`，不过这样做可读性不好，不建议使用。
+
+`～x` 操作大致等同于 `-(x + 1)`, 这有什么用呢？这样的话，我们就可以将 `-1` 这个值转换成 `-0`，而 `-0` 转换成布尔值为 `false`，这又有什么用呢？用处就在于 `-1` 一般作为一个 "哨位值"， 比如在 `indexOf()` 方法中，如果没有匹配项则会返回 `-1`，那么我们直接判断 `string.indexOf(x) !== -1`不就行了吗？这样写法是可以，不过不是很好，这样的写法会出现 ”抽象渗漏“的问题，意思就是暴露了底层的实现细节。所以我们可以改写为如下形式：
+
+    var a = "Hello World";
+
+    if(!~a.indexOf("Hello")) {
+    	// 没有找到匹配项
+    }
+    
+计算过程很简单，当找到 `Hello` 这个字符串时，返回的数不是 `-1`，`～a.indexOf("Hello)`转换成不为 `0` 的值，在利用 `!` 转换成布尔值，就为 `false`。（`!` 会将一个值强制转换成布尔值，并且取反）。
 
 
 
