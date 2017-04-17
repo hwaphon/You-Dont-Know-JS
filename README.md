@@ -258,6 +258,121 @@ chapter 4:
     sayHello();    // Hello World
     
  对于 `&&` 来说，如果整体结果为 `true`，则会返回第二个数，如果整体为 `false`，则会返回第一个数，如果一边为真一边为假，则返回为真的那个数。
-	
+
+---
+
+chapter05: 
+
+- 语句和表达式在英语中能找到对比 - 语句就像英语中的句子，而表达式就像短语。
+
+- 语句都有一个返回值，而且规范定义 `var` 的结果值是 `undefined`，比如在控制台输入 `var a = 42;` 会返回 `undefined`。代码块返回的结果值是最后一个语句的结果值。 `{ var a = 10, b; b = a;}` 会返回 `10`。
+
+- 值得注意的是，虽然每条语句都会默认的返回一个结果值，但是语法不允许我们获得语句的结果值赋值给另一个变量，不过我们可以通过 `eval`来完成这一功能（极其不建议使用）。 `ES7` 中有一项 `do` 表达式的提议，其功能就是执行一个代码块，并且返回最后一个语句的结果值。
+
+- `++x++`这种同时利用前置和后置自增的表达式会抛出 `ReferenceError`. 要想完成同样的功能，我们可以使用 `var b = (a++, a)`来完成。
+
+-  对于下述代码，`continue foo `并不是指跳到标签 `foo` 所在位置继续执行，而是指执行 `foo`循环的下一轮循环。
+
+   		 foo: for(var i = 0; i < 5; i++) {
+    			for(var j = 0; j < 5; j++) {
+    				if (i === j) {
+    					continue foo;
+    				}
+    				console.log(i, j);
+    			}
+    		}
+
+ - 对于下述代码，`break foo` 不是指跳转到 `foo` 标签所在的位置继续执行，而是指跳出 `foo` 所在的循环或者代码块。
+ 
+   		 foo: for(var i = 0; i < 5; i++) {
+    			for(var j = 0; j < 5; j++) {
+    				if (i === j) {
+    					break foo;
+    				}
+    				console.log(i, j);
+    			}
+    		}
+    
+- 从 `ES6` 开始， `{}` 也可以用于解构赋值，其应用如下：
+
+   		 function doSomething() {
+   		 	return {
+   		 		a: 2,
+   		 		b: 4
+   		 	};
+   		 }
+		
+   		 var { a, b } = doSomething();
+   		 console.log( a, b );
+   		 
+    或者像下面这样当做参数使用：
+    
+   		 function foo({ a, b, c }) {
+   		 	console.log( a, b, c );
+   		 }
+
+   		 foo({ a: 2, b: 4, c: 6 });
+   		 
+    重点在哪里？在于我们可以直接提取对象中的数，而不是利用类似 `obj.a` 或者 `obj.b` 这样的语法。
+    
+- 很多人误以为 `JS` 中存在 `else if` 语法，不过事实上 `JS` 中不存在这样的语法，比如像下面这样的代码会给你存在 `else if` 的错觉。
+
+    	if (a) {
+    		console.log(a)
+    	} else if(b) {
+    		console.log(b);
+    	} else {
+    		console.log();
+    	}
+    	
+    其实这种写法，`JS` 会认为你在 `else` 后面省略了 `{`括号，所以上面的语法实际上只是下面这种形式而已。
+    
+     	if (a) {
+    		console.log(a)
+    	} else  {
+    		if(b) {
+    			console.log(b);
+    		} else {
+    			console.log();
+    		}
+    	}
+    	
+- `&&` 的优先级高于 `||`。合理的利用 `&&` 和 `||` 的短路特性，不仅可以简化我们的代码，还可以减少代码出错的几率。比如以下代码，将 `opts` 作为守护条件。
+
+    	function doSomething(opts) {
+    		if (opts && opts.cache) {
+    			
+    		}
+    	}
+    	
+    或者利用 `||` 判断一个值是否初始化，如果没有初始化，就调用初始化函数。
+    
+        function doSomething(opts) {
+    		if (opts || opts.init()) {
+    			
+    		}
+    	}
+    	
+ - `ES6` 规范定义了一个新的概念，叫做 `TDZ`(暂时性死区), 是指由于在代码中的变量还没有初始化而不能被引用的情况。比如以下情况。
+ 
+     	{
+    		a = 2;
+    		let a;
+    	}
+    	
+    这里的 `a` 就是 `TDZ`, 所以在 `let` 声明之前使用会出现错误。对未声明变量使用 `typeof` 不会出现错误，而在 `TDZ` 中却会出现错误。
+    
+- `ES6` 中支持为参数设置默认值，比如下面这个例子。
+
+    	function foo(a = 2, b = 4) {
+    		console.log(a, b);
+    	}
+
+    	foo();
+    	
+- `finally` 中的代码总会在 `try` 之后执行或者在 `catch` 之后执行，如果 `try {}` 块中存在 `return` 语句，正确的解答是，`try ` 中的 `return` 值会保存在函数的返回值中，然后再去执行 `finally` 语句。而且如果 `finally` 语句中设置了 `return` 语句，会覆盖之前的值，而且如果 `finally` 中抛出了异常，那么之前设置的返回值都会失效。
 
 
+- `switch` 可以看作是 `if ... else if ... else ` 的替代，不过值得注意的是在 `case` 判断式中必须严格的接收 `true` 或者 `false`，他不会自动转换类型，比如 `case 1`也永远不会执行到，因为 `1` 并不会自动转换成 `true`。
+
+---
